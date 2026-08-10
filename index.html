@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Comparison Slider</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/component/component.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/component/styles.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: transparent; }
+    img-comparison-slider { width: 100%; height: 100vh; outline: none; }
+    img-comparison-slider img { width: 100%; height: 100%; object-fit: cover; }
+  </style>
+</head>
+<body>
+
+  <img-comparison-slider id="slider">
+    <img id="before-img" slot="first" src="" />
+    <img id="after-img" slot="second" src="" />
+  </img-comparison-slider>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const beforeUrl = params.get('before');
+    const afterUrl = params.get('after');
+
+    if (beforeUrl) document.getElementById('before-img').src = beforeUrl;
+    if (afterUrl) document.getElementById('after-img').src = afterUrl;
+  </script>
+
+</body>
+</html>
