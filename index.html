@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Comparison Slider</title>
+  <title>Image Slider</title>
   <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/component/component.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/component/styles.css" />
   <style>
@@ -25,8 +25,8 @@
     const beforeUrl = params.get('before');
     const afterUrl = params.get('after');
 
-    if (beforeUrl) document.getElementById('before-img').src = beforeUrl;
-    if (afterUrl) document.getElementById('after-img').src = afterUrl;
+    if (beforeUrl) document.getElementById('before-img').src = decodeURIComponent(beforeUrl);
+    if (afterUrl) document.getElementById('after-img').src = decodeURIComponent(afterUrl);
   </script>
 
 </body>
