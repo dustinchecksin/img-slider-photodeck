@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Slider</title>
 
+  <!-- Load from CDN instead of ./dist/ -->
   <link rel="stylesheet" href="https://unpkg.com/img-comparison-slider@8/dist/styles.css" />
-  <script src="https://unpkg.com/img-comparison-slider@8/dist/index.js"></script>
+  <script type="module" src="https://unpkg.com/img-comparison-slider@8/dist/index.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,15 +26,12 @@
 
     if (before && after) {
       const slider = document.createElement('img-comparison-slider');
-      
       const img1 = document.createElement('img');
       img1.slot = 'first';
       img1.src = decodeURIComponent(before);
-      
       const img2 = document.createElement('img');
       img2.slot = 'second';
       img2.src = decodeURIComponent(after);
-      
       slider.appendChild(img1);
       slider.appendChild(img2);
       document.getElementById('container').appendChild(slider);
