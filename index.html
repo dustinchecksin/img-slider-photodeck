@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="https://unpkg.com/img-comparison-slider@8/dist/styles.css" />
   <script src="https://unpkg.com/img-comparison-slider@8/dist/index.js"></script>
 
- <style>
+  <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Fixed: 'flex' is not a valid overflow value */
+      overflow: hidden;
       background: transparent;
       font-family: "Segoe UI", Roboto, sans-serif;
     }
@@ -24,10 +24,10 @@
       flex-direction: column;
       width: 100%;
       height: 100vh;
-      overflow: hidden; 
+      overflow: hidden;
     }
 
-    /* Fixed: Added the missing dot for the class name */
+    /* Radio Control Bar Styling */
     .controls-wrapper {
       display: none; 
       background: rgba(0, 0, 0, 0.75);
@@ -72,12 +72,13 @@
       accent-color: #0070f3;
     }
 
+    /* Slider Container */
     #slider-container {
       flex: 1;
       width: 100%;
       height: 100%;
       min-height: 0; 
-      position: relative; /* Fixed: Changed from fixed so it stays in the flex column */
+      position: relative;
       overflow: hidden;
     }
 
@@ -85,16 +86,28 @@
       width: 100%; 
       height: 100%; 
       display: block; 
-      /* Fixed: Removed the stray } that was breaking the code here */
       --divider-color: var(--custom-divider-color, #ffffff);
       --divider-width: var(--custom-divider-width, 2px);
       --default-handle-color: var(--custom-handle-color, #ffffff);
     }
 
-    img-comparison-slider img { width: 100%; height: 100%; object-fit: contain; }
+    /* THE FIX: Slot Wrappers to isolate layout bugs */
+    .slot-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: block;
+    }
 
+    .slot-wrapper img { 
+      width: 100%; 
+      height: 100%; 
+      display: block; 
+    }
+
+    /* Text Badges/Labels inside slider */
     .slider-label {
-      position: absolute; /* Fixed: 'flex' is not a valid position value */
+      position: absolute;
       bottom: 20px;
       padding: 6px 12px;
       background: rgba(0, 0, 0, 0.65);
@@ -133,18 +146,15 @@
     document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
 
-      // 1. Sneas Built-In Native Attributes
       const value = params.get('value');             
       const hover = params.get('hover');             
       const direction = params.get('direction');     
-      const fit = params.get('fit') || 'contain'; // Defaults to contain for seamless edges
+      const fit = params.get('fit') || 'contain'; 
       
-      // CSS Customization Overrides
       const dividerColor = params.get('dividerColor');
       const dividerWidth = params.get('dividerWidth');
       const handleColor = params.get('handleColor');
 
-      // 2. Stage Collection
       const stages = {};
       const stageKeys = ['raw', 'keystone', 'color', 'retouch', 'before', 'after'];
       stageKeys.forEach(key => {
@@ -157,23 +167,27 @@
       if (keys.length >= 2) {
         const slider = document.createElement('img-comparison-slider');
 
-        // Apply native Sneas features
         if (value) slider.setAttribute('value', value);
         if (hover === 'true') slider.setAttribute('hover', 'hover');
         if (direction === 'vertical') slider.setAttribute('direction', 'vertical');
 
-        // Apply CSS Variables
         if (dividerColor) slider.style.setProperty('--custom-divider-color', dividerColor);
         if (dividerWidth) slider.style.setProperty('--custom-divider-width', dividerWidth);
         if (handleColor) slider.style.setProperty('--custom-handle-color', handleColor);
 
-        // Images creation
+        // THE FIX: Create wrapper divs for the slots
+        const firstWrapper = document.createElement('div');
+        firstWrapper.slot = 'first';
+        firstWrapper.className = 'slot-wrapper';
+
+        const secondWrapper = document.createElement('div');
+        secondWrapper.slot = 'second';
+        secondWrapper.className = 'slot-wrapper';
+
         const img1 = document.createElement('img');
-        img1.slot = 'first';
         img1.style.objectFit = fit;
 
         const img2 = document.createElement('img');
-        img2.slot = 'second';
         img2.style.objectFit = fit;
 
         const defaultLeftKey = stages.before ? 'before' : keys[0];
@@ -182,29 +196,32 @@
         img1.src = stages[defaultLeftKey];
         img2.src = stages[defaultRightKey];
 
-        slider.appendChild(img1);
-        slider.appendChild(img2);
+        // Append images to their wrappers
+        firstWrapper.appendChild(img1);
+        secondWrapper.appendChild(img2);
 
-        // Optional Badges Setup
         let label1, label2;
         if (params.get('labels') === 'true') {
           label1 = document.createElement('div');
           label1.className = 'slider-label label-first';
-          label1.slot = 'first';
           label1.innerText = defaultLeftKey;
 
           label2 = document.createElement('div');
           label2.className = 'slider-label label-second';
-          label2.slot = 'second';
           label2.innerText = defaultRightKey;
 
-          slider.appendChild(label1);
-          slider.appendChild(label2);
+          // Append labels to their wrappers, NOT the slider itself
+          firstWrapper.appendChild(label1);
+          secondWrapper.appendChild(label2);
         }
+
+        // Add the wrappers to the slider
+        slider.appendChild(firstWrapper);
+        slider.appendChild(secondWrapper);
 
         document.getElementById('slider-container').appendChild(slider);
 
-        // 3. Build Radio Button UI (for 3+ stages)
+        // Build Radio Button UI
         if (keys.length > 2) {
           const controlsBar = document.getElementById('controls');
           const leftControls = document.getElementById('left-controls');
@@ -213,7 +230,6 @@
           controlsBar.style.display = 'flex';
 
           keys.forEach(key => {
-            // Left Group
             const leftLabel = document.createElement('label');
             leftLabel.innerHTML = `
               <input type="radio" name="leftStage" value="${key}" ${key === defaultLeftKey ? 'checked' : ''}>
@@ -226,7 +242,6 @@
             });
             leftControls.appendChild(leftLabel);
 
-            // Right Group
             const rightLabel = document.createElement('label');
             rightLabel.innerHTML = `
               <input type="radio" name="rightStage" value="${key}" ${key === defaultRightKey ? 'checked' : ''}>
