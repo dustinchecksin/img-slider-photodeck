@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="https://unpkg.com/img-comparison-slider@8/dist/styles.css" />
   <script src="https://unpkg.com/img-comparison-slider@8/dist/index.js"></script>
 
-  <style>
-    * { box-sizing: border-box; margin: 10; padding: 10; }
+ <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       width: 100%;
       height: 100%;
-      overflow: flex;
+      overflow: hidden; /* Fixed: 'flex' is not a valid overflow value */
       background: transparent;
       font-family: "Segoe UI", Roboto, sans-serif;
     }
@@ -24,12 +24,12 @@
       flex-direction: column;
       width: 100%;
       height: 100vh;
-      overflow: hidden; /* Prevents vertical spilling */
+      overflow: hidden; 
     }
 
-    /* Radio Control Bar Styling */
-    controls-wrapper {
-      display: none; /* Hidden by default unless multi-stage images exist */
+    /* Fixed: Added the missing dot for the class name */
+    .controls-wrapper {
+      display: none; 
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(8px);
       padding: 10px;
@@ -72,19 +72,20 @@
       accent-color: #0070f3;
     }
 
-    /* Slider Container - Locked Bounds */
     #slider-container {
       flex: 1;
       width: 100%;
       height: 100%;
-      min-height: 0; /* CRUCIAL FLEXBOX FIX: Prevents child expansion */
-      position: fixed;
+      min-height: 0; 
+      position: relative; /* Fixed: Changed from fixed so it stays in the flex column */
       overflow: hidden;
     }
 
-    img-comparison-slider { width: 100%; height: 100%; display: block; }
-
-      /* Sneas Custom CSS Variables */
+    img-comparison-slider { 
+      width: 100%; 
+      height: 100%; 
+      display: block; 
+      /* Fixed: Removed the stray } that was breaking the code here */
       --divider-color: var(--custom-divider-color, #ffffff);
       --divider-width: var(--custom-divider-width, 2px);
       --default-handle-color: var(--custom-handle-color, #ffffff);
@@ -92,9 +93,8 @@
 
     img-comparison-slider img { width: 100%; height: 100%; object-fit: contain; }
 
-    /* Text Badges/Labels inside slider */
     .slider-label {
-      position: flex;
+      position: absolute; /* Fixed: 'flex' is not a valid position value */
       bottom: 20px;
       padding: 6px 12px;
       background: rgba(0, 0, 0, 0.65);
