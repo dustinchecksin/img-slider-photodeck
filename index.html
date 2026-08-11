@@ -3,41 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Slider</title>
+  <title>Master Image Comparison Engine</title>
 
+  <!-- Load Sneas img-comparison-slider (Verified Working Tag) -->
   <link rel="stylesheet" href="https://unpkg.com/img-comparison-slider@8/dist/styles.css" />
   <script src="https://unpkg.com/img-comparison-slider@8/dist/index.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
-    img-comparison-slider { width: 100%; height: 100%; display: block; }
-    img-comparison-slider img { width: 100%; height: 100%; object-fit: contain; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Radio Control Bar Styling */
+    .controls-wrapper {
+      display: none; /* Auto-revealed only if 3+ stages exist */
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 10px;
+      color: white;
+      z-index: 10;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .control-group label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: background 0.2s;
+    }
+
+    .control-group label:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .control-group input[type="radio"] {
+      cursor: pointer;
+      accent-color: #0070f3;
+    }
+
+    /* Slider Container */
+    #slider-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    img-comparison-slider {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+
+      /* Sneas Custom CSS Variables */
+      --divider-color: var(--custom-divider-color, #ffffff);
+      --divider-width: var(--custom-divider-width, 2px);
+      --default-handle-color: var(--custom-handle-color, #ffffff);
+    }
+
+    img-comparison-slider img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Text Badges/Labels inside slider */
+    .slider-label {
+      position: absolute;
+      bottom: 20px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.65);
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 4px;
+      pointer-events: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .label-first { left: 20px; }
+    .label-second { right: 20px; }
   </style>
 </head>
 <body>
-  <div id="container"></div>
+
+  <div id="app">
+    <!-- Radio Buttons UI -->
+    <div id="controls" class="controls-wrapper">
+      <div class="control-group" id="left-controls">
+        <span>Left:</span>
+      </div>
+      <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 16px;"></div>
+      <div class="control-group" id="right-controls">
+        <span>Right:</span>
+      </div>
+    </div>
+
+    <!-- Sneas Slider Container -->
+    <div id="slider-container"></div>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
-      const before = params.get('before');
-      const after = params.get('after');
 
-      if (before && after) {
+      // 1. Sneas Built-In Native Attributes
+      const value = params.get('value');             
+      const hover = params.get('hover');             
+      const direction = params.get('direction');     
+      const fit = params.get('fit') || 'contain';    
+      
+      // CSS Customization Overrides
+      const dividerColor = params.get('dividerColor');
+      const dividerWidth = params.get('dividerWidth');
+      const handleColor = params.get('handleColor');
+
+      // 2. Stage Collection (Params are already decoded by URLSearchParams)
+      const stages = {};
+      const stageKeys = ['raw', 'keystone', 'color', 'retouch', 'before', 'after'];
+      stageKeys.forEach(key => {
+        const val = params.get(key);
+        if (val) stages[key] = val; 
+      });
+
+      const keys = Object.keys(stages);
+
+      if (keys.length >= 2) {
         const slider = document.createElement('img-comparison-slider');
-        
+
+        // Apply native Sneas features
+        if (value) slider.setAttribute('value', value);
+        if (hover === 'true') slider.setAttribute('hover', 'hover');
+        if (direction === 'vertical') slider.setAttribute('direction', 'vertical');
+
+        // Apply CSS Variables
+        if (dividerColor) slider.style.setProperty('--custom-divider-color', dividerColor);
+        if (dividerWidth) slider.style.setProperty('--custom-divider-width', dividerWidth);
+        if (handleColor) slider.style.setProperty('--custom-handle-color', handleColor);
+
+        // Images creation
         const img1 = document.createElement('img');
         img1.slot = 'first';
-        img1.src = decodeURIComponent(before);
-        
+        img1.style.objectFit = fit;
+
         const img2 = document.createElement('img');
         img2.slot = 'second';
-        img2.src = decodeURIComponent(after);
-        
+        img2.style.objectFit = fit;
+
+        const defaultLeftKey = stages.before ? 'before' : keys[0];
+        const defaultRightKey = stages.after ? 'after' : keys[keys.length - 1];
+
+        img1.src = stages[defaultLeftKey];
+        img2.src = stages[defaultRightKey];
+
         slider.appendChild(img1);
         slider.appendChild(img2);
-        document.getElementById('container').appendChild(slider);
+
+        // Optional Badges Setup
+        let label1, label2;
+        if (params.get('labels') === 'true') {
+          label1 = document.createElement('div');
+          label1.className = 'slider-label label-first';
+          label1.slot = 'first';
+          label1.innerText = defaultLeftKey;
+
+          label2 = document.createElement('div');
+          label2.className = 'slider-label label-second';
+          label2.slot = 'second';
+          label2.innerText = defaultRightKey;
+
+          slider.appendChild(label1);
+          slider.appendChild(label2);
+        }
+
+        document.getElementById('slider-container').appendChild(slider);
+
+        // 3. Build Radio Button UI (for 3+ stages)
+        if (keys.length > 2) {
+          const controlsBar = document.getElementById('controls');
+          const leftControls = document.getElementById('left-controls');
+          const rightControls = document.getElementById('right-controls');
+
+          controlsBar.style.display = 'flex';
+
+          keys.forEach(key => {
+            // Left Group
+            const leftLabel = document.createElement('label');
+            leftLabel.innerHTML = `
+              <input type="radio" name="leftStage" value="${key}" ${key === defaultLeftKey ? 'checked' : ''}>
+              ${key}
+            `;
+            leftLabel.querySelector('input').addEventListener('change', (e) => {
+              const newKey = e.target.value;
+              img1.src = stages[newKey];
+              if (label1) label1.innerText = newKey; // Update badge text dynamically
+            });
+            leftControls.appendChild(leftLabel);
+
+            // Right Group
+            const rightLabel = document.createElement('label');
+            rightLabel.innerHTML = `
+              <input type="radio" name="rightStage" value="${key}" ${key === defaultRightKey ? 'checked' : ''}>
+              ${key}
+            `;
+            rightLabel.querySelector('input').addEventListener('change', (e) => {
+              const newKey = e.target.value;
+              img2.src = stages[newKey];
+              if (label2) label2.innerText = newKey; // Update badge text dynamically
+            });
+            rightControls.appendChild(rightLabel);
+          });
+        }
       }
     });
   </script>
