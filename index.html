@@ -83,11 +83,7 @@
       overflow: hidden;
     }
 
-    img-comparison-slider {
-      width: 100%;
-      height: 100%;
-      display: fixed;
-      outline: none;
+    img-comparison-slider { width: 100%; height: 100%; display: block; }
 
       /* Sneas Custom CSS Variables */
       --divider-color: var(--custom-divider-color, #ffffff);
@@ -95,11 +91,7 @@
       --default-handle-color: var(--custom-handle-color, #ffffff);
     }
 
-    img-comparison-slider img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover; /* Default to edge-to-edge contain */
-    }
+    img-comparison-slider img { width: 100%; height: 100%; object-fit: contain; }
 
     /* Text Badges/Labels inside slider */
     .slider-label {
