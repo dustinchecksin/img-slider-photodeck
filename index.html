@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Slider</title>
 
-  <!-- Load from CDN -->
   <link rel="stylesheet" href="https://unpkg.com/img-comparison-slider@8/dist/styles.css" />
-  <script type="module">
-    import ImageComparisonSlider from 'https://unpkg.com/img-comparison-slider@8/dist/index.js';
-  </script>
+  <script src="https://unpkg.com/img-comparison-slider@8/dist/index.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,10 +18,8 @@
 <body>
   <div id="container"></div>
 
-  <script type="module">
-    import ImageComparisonSlider from 'https://unpkg.com/img-comparison-slider@8/dist/index.js';
-    
-    window.addEventListener('load', () => {
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const before = params.get('before');
       const after = params.get('after');
