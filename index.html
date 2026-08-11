@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Comparison Slider</title>
   <link rel="stylesheet" href="https://unpkg.com/img-comparison-slider@7/dist/styles.css">
+  <script src="https://unpkg.com/img-comparison-slider@7/dist/index.js"></script>
 </head>
 <body style="margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden;">
   <img-comparison-slider>
@@ -12,10 +13,7 @@
     <img slot="second" id="img2" />
   </img-comparison-slider>
 
-  <script type="module">
-    import { register } from 'https://unpkg.com/img-comparison-slider@7/dist/index.js';
-    register();
-
+  <script>
     // Get images from URL params
     const params = new URLSearchParams(window.location.search);
     const img1Src = params.get('before');
